@@ -142,8 +142,10 @@ class IterableConnectionField(Field):
         resolved = resolver(root, args, context, info)
 
         on_resolve = partial(cls.resolve_connection, connection_type, args)
-        if is_thenable(resolved):
+        try:
             return Promise.resolve(resolved).then(on_resolve)
+        except AttributeError:
+            pass  # Better to ask forgiveness than to ask permission
 
         return on_resolve(resolved)
 
