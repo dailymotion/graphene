@@ -5,7 +5,6 @@ from functools import partial
 import six
 
 from graphql_relay import connection_from_list
-from promise import Promise, is_thenable
 
 from ..types import (AbstractType, Boolean, Enum, Int, Interface, List, NonNull, Scalar, String,
                      Union)
@@ -142,11 +141,6 @@ class IterableConnectionField(Field):
         resolved = resolver(root, args, context, info)
 
         on_resolve = partial(cls.resolve_connection, connection_type, args)
-        try:
-            return Promise.resolve(resolved).then(on_resolve)
-        except AttributeError:
-            pass  # Better to ask forgiveness than to ask permission
-
         return on_resolve(resolved)
 
     def get_resolver(self, parent_resolver):
